@@ -1,6 +1,6 @@
 # Nix Flake · Java Dev Template
 
-> purr · git-hooks · java · jvm · maven · gradle · graalvm · reproducible · nix-flake
+> purr · git-hooks · java · maven · gradle · nix-flake
 
 Nix flake template for Java/JVM development — reproducible dev shell with GraalVM JDK, Maven, Gradle, and git pre-commit hooks. Built on [purr](https://flakehub.com/f/nixcafe/purr) and [git-hooks.nix](https://flakehub.com/f/cachix/git-hooks.nix).
 
