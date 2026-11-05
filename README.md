@@ -25,7 +25,7 @@ nix flake init -t beans#java
 ### Create from Template
 
 ```bash
-gh repo create my-java-project --template nixcafe/java --clone
+gh repo create my-java-project --template nixcafe-develop/java --clone
 ```
 
 ### Enter the Dev Shell
