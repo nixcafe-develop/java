@@ -1,61 +1,82 @@
-# Nix Flake · Java Dev Template
+# Java development environment
 
-> purr · git-hooks · java · maven · gradle · nix-flake
+Nix flake template for Java and JVM projects. The dev shell provides GraalVM CE as the JDK, Maven, and Gradle. Maven and Gradle are configured to use the GraalVM JDK. The flake is built with [purr](https://flakehub.com/f/nixcafe/purr) and uses [git-hooks.nix](https://flakehub.com/f/cachix/git-hooks.nix) for pre-commit hooks.
 
-Nix flake template for Java/JVM development — reproducible dev shell with GraalVM JDK, Maven, Gradle, and git pre-commit hooks. Built on [purr](https://flakehub.com/f/nixcafe/purr) and [git-hooks.nix](https://flakehub.com/f/cachix/git-hooks.nix).
+Part of the [develop-templates](https://github.com/nixcafe/develop-templates) collection.
 
-Part of the [develop-templates](https://github.com/nixcafe/develop-templates) collection (`nix flake init`-ready).
+## Quick start
 
-## Quick Start
-
-### `nix flake init`
+Create the project files in the current directory:
 
 ```bash
 nix flake init -t "github:nixcafe/develop-templates#java" --refresh
 ```
 
-Register an alias:
+Register the collection once to use the shorter name:
+
 ```bash
 nix registry add beans "github:nixcafe/develop-templates"
 nix flake init -t beans#java
 ```
 
-> **Tip**: With [cattery-modules](https://github.com/nixcafe/cattery-modules), `beans` is pre-registered.
+With [cattery-modules](https://github.com/nixcafe/cattery-modules), `beans` is already registered.
 
-### Create from Template
+You can also create a repository from the template repository:
 
 ```bash
 gh repo create my-java-project --template nixcafe-develop/java --clone
 ```
 
-### Enter the Dev Shell
+Enter the dev shell:
 
 ```bash
-direnv allow
-mvn --version   # or: gradle --version
+nix develop
 ```
 
-## What's Inside
+If direnv is installed, `direnv allow` loads the shell when you enter the directory. The template includes an `.envrc` that calls `use flake`.
+
+The template does not include a `flake.lock`. The first `nix develop` resolves the inputs and writes one.
+
+## What's included
 
 | Tool | Purpose |
 |------|---------|
-| `GraalVM CE` | JDK with GraalVM native-image support |
-| `maven` | Build & dependency management |
-| `gradle` | Build & dependency management |
+| GraalVM CE | JDK used by Maven and Gradle |
+| Maven | Build and dependency management |
+| Gradle | Build and dependency management |
+
+The dev shell has a shell hook that installs the hooks enabled in `develop/checks/git-hooks/default.nix`. The `hooks` set in this template is empty, so no hooks run until you enable some.
+
+## Useful commands
+
+```bash
+nix develop          # enter the dev shell
+direnv allow         # load the shell through direnv
+mvn --version        # print the Maven and Java versions
+gradle --version     # print the Gradle and JVM versions
+```
 
 ## Customizing
 
-### Switch JDK
+### Use a different JDK
 
-Edit `develop/shells/default/default.nix`:
+`develop/shells/default/default.nix` sets:
 
 ```nix
-jdk = pkgs.jdk23;  # standard OpenJDK
+jdk = pkgs.graalvmPackages.graalvm-ce;
 ```
 
-### Enable Pre-commit Hooks
+Replace it with another JDK package from nixpkgs, for example:
 
-Edit `develop/checks/git-hooks/default.nix`:
+```nix
+jdk = pkgs.jdk23;
+```
+
+Maven and Gradle are defined in terms of `jdk`, so both use the new JDK.
+
+### Enable pre-commit hooks
+
+`develop/checks/git-hooks/default.nix` starts with an empty `hooks` set. Add entries to enable hooks:
 
 ```nix
 hooks = {
@@ -65,16 +86,16 @@ hooks = {
 };
 ```
 
-See [git-hooks.nix](https://github.com/cachix/git-hooks.nix) for available hooks.
+See [git-hooks.nix](https://github.com/cachix/git-hooks.nix) for the available hooks. The shell hook installs enabled hooks when you enter the dev shell.
 
-## Project Structure
+## Project structure
 
 ```
 .
-├── flake.nix                          # Flake entrypoint
+├── flake.nix                          # Flake entry point
 ├── .envrc                             # direnv: use flake
 ├── .gitignore
 └── develop/
     ├── shells/default/default.nix     # Dev shell (GraalVM, Maven, Gradle)
-    └── checks/git-hooks/default.nix   # Pre-commit hook config
+    └── checks/git-hooks/default.nix   # Pre-commit hook configuration
 ```
